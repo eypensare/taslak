@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liquid Parallax Portfolio</title>
+    
+    <!-- Locomotive Scroll CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.1.4/dist/locomotive-scroll.min.css">
+    
+    <style>
+        /* --- Temel Ayarlar --- */
+        @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Manrope:wght@300;500&display=swap');
+
+        body {
+            margin: 0;
+            background-color: #0b0b0b;
+            color: #ececec;
+            font-family: 'Manrope', sans-serif;
+            overflow: hidden; /* Locomotive Scroll için gerekli */
+        }
+
+        /* --- Custom Cursor (Neon Halka) --- */
+        .cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #00f2ff;
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s, background-color 0.3s;
+            mix-blend-mode: difference;
+        }
+
+        .cursor.active {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(0, 242, 255, 0.2);
+            border-color: transparent;
+        }
+
+        /* --- Canvas (WebGL) --- */
+        #webgl-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* İçeriğin arkasında */
+            pointer-events: none;
+        }
+
+        /* --- Layout & Typography --- */
+        .c-scrollbar { z-index: 1000; } /* Scrollbar üstte kalsın */
+
+        h1, h2 {
+            font-family: 'Syncopate', sans-serif;
+            text-transform: uppercase;
+            margin: 0;
+        }
+
+        section {
+            padding: 10vh 5vw;
+            position: relative;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .hero h1 {
+            font-size: 8vw;
+            line-height: 0.9;
+            opacity: 0; /* JS ile açılacak */
+            animation: fadeIn 1s forwards 0.5s;
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            max-width: 400px;
+            margin-top: 2rem;
+            color: #888;
+        }
+
+        @keyframes fadeIn { to { opacity: 1; } }
+
+        /* Gallery / Projects */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10vw;
+            margin-top: 10vh;
+            padding-bottom: 20vh;
+        }
+
+        .gallery-item {
+            position: relative;
+            width: 100%;
+            height: 60vh; /* Resim yüksekliği */
+            margin-bottom: 10vh;
+        }
+
+        .gallery-item:nth-child(even) {
+            margin-top: 20vh; /* Asimetrik görünüm */
+        }
+
+        /* Resim Yer Tutucuları (Görünmez ama yer kaplar) */
+        .gallery-image {
+            width: 100%;
+            height: 100%;
+            opacity: 0; /* Resmi gizle, Three.js çizecek */
+            visibility: hidden; 
+        }
+
+        .gallery-text {
+            position: absolute;
+            bottom: -40px;
+            left: 0;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        /* Footer */
+        .footer {
+            height: 50vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #111;
+        }
+
+        a { color: inherit; text-decoration: none; cursor: none; }
+    </style>
+</head>
+<body>
+
+    <!-- Özel İmleç -->
+    <div class="cursor"></div>
+
+    <!-- WebGL Canvas -->
+    <div id="webgl-container"></div>
+
+    <!-- Locomotive Scroll Wrapper -->
+    <div data-scroll-container id="main-container">
+        
+        <section class="hero" data-scroll-section>
+            <div>
+                <!-- data-scroll-speed: Parallax hızı. Negatif değer ters yöne, pozitif aynı yöne hızlı gider -->
+                <h1 data-scroll data-scroll-speed="1">Creative</h1>
+                <h1 data-scroll data-scroll-speed="3" style="color:#00f2ff">Developer</h1>
+                <h1 data-scroll data-scroll-speed="2">Portfolio</h1>
+            </div>
+            <p data-scroll data-scroll-speed="-1">
+                WebGL, Shaders ve Smooth Scroll ile güçlendirilmiş dijital deneyimler.
+            </p>
+        </section>
+
+        <section class="gallery" data-scroll-section>
+            <!-- Proje 1 -->
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop" class="gallery-image" alt="Abstract 1" data-hover-title="Neon Future">
+                <div class="gallery-text" data-scroll data-scroll-speed="1">NEON FUTURE</div>
+            </div>
+
+            <!-- Proje 2 -->
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=1000&auto=format&fit=crop" class="gallery-image" alt="Abstract 2" data-hover-title="Liquid Data">
+                <div class="gallery-text" data-scroll data-scroll-speed="2">LIQUID DATA</div>
+            </div>
+
+            <!-- Proje 3 -->
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1634152962476-4b8a00e1915c?q=80&w=1000&auto=format&fit=crop" class="gallery-image" alt="Abstract 3" data-hover-title="Cyber Space">
+                <div class="gallery-text" data-scroll data-scroll-speed="1">CYBER SPACE</div>
+            </div>
+            
+             <!-- Proje 4 -->
+             <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=1000&auto=format&fit=crop" class="gallery-image" alt="Abstract 4" data-hover-title="Deep Dive">
+                <div class="gallery-text" data-scroll data-scroll-speed="1.5">DEEP DIVE</div>
+            </div>
+        </section>
+
+        <section class="footer" data-scroll-section>
+            <h2 data-scroll data-scroll-speed="1">Let's work together.</h2>
+        </section>
+    </div>
+
+    <!-- Kütüphaneler -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.1.4/dist/locomotive-scroll.min.js"></script>
+
+    <script>
+        // --- 1. Custom Cursor Mantığı ---
+        const cursor = document.querySelector('.cursor');
+        
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        // Etkileşimli elementlerin üzerine gelince büyütme
+        const hoverElements = document.querySelectorAll('a, h1, .gallery-item');
+        hoverElements.forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('active'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
+        });
+
+
+        // --- 2. WebGL & Shader Kurulumu ---
+        
+        // Shader Kodları (Vertex & Fragment)
+        // Vertex Shader: Piksellerin pozisyonunu ve UV koordinatlarını ayarlar
+        const vertexShader = `
+            uniform float uTime;
+            uniform vec2 uHover; // Hover pozisyonu
+            uniform float uHoverState; // Hover gücü (0 -> 1)
+            
+            varying vec2 vUv;
+            varying float vNoise;
+
+            void main() {
+                vUv = uv;
+                
+                // Basit bir dalgalanma efekti için noise benzeri işlem
+                float dist = distance(uv, uHover); // Mouse'un texture üzerindeki konumu
+                
+                // Hover durumunda vertex'leri "Z" ekseninde veya dalga olarak oynat
+                // Burada 2D bozulma (distortion) yapacağız
+                
+                vec3 newPos = position;
+                
+                // Sine dalgası efekti
+                float wave = sin(newPos.x * 5.0 + uTime * 2.0) * 0.1 * uHoverState;
+                newPos.z += wave;
+
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(newPos, 1.0);
+            }
+        `;
+
+        // Fragment Shader: Sıvı (Liquid) doku manipülasyonu
+        const fragmentShader = `
+            uniform sampler2D uTexture;
+            uniform float uTime;
+            uniform float uHoverState;
+            uniform vec2 uMouse;
+
+            varying vec2 vUv;
+
+            void main() {
+                vec2 uv = vUv;
+
+                // Dalga benzeri deformasyon
+                float waveStrength = 0.05 * uHoverState;
+                
+                // X ve Y koordinatlarını sinüs dalgalarıyla büküyoruz
+                uv.x += sin(uv.y * 10.0 + uTime) * waveStrength;
+                uv.y += cos(uv.x * 10.0 + uTime) * waveStrength;
+
+                // Mouse etkileşimi ile RGB kayması (Chromatic Aberration)
+                float r = texture2D(uTexture, uv + vec2(0.005 * uHoverState, 0.0)).r;
+                float g = texture2D(uTexture, uv).g;
+                float b = texture2D(uTexture, uv - vec2(0.005 * uHoverState, 0.0)).b;
+
+                gl_FragColor = vec4(r, g, b, 1.0);
+            }
+        `;
+
+
+        // Ana Script Sınıfı
+        class Sketch {
+            constructor() {
+                this.container = document.getElementById('webgl-container');
+                this.images = [...document.querySelectorAll('.gallery-image')];
+                
+                this.width = window.innerWidth;
+                this.height = window.innerHeight;
+
+                this.scroll = { current: 0, target: 0, last: 0 };
+                
+                this.initLocomotive();
+                this.initThree();
+                this.addObjects();
+                this.render();
+                
+                window.addEventListener('resize', this.resize.bind(this));
+            }
+
+            initLocomotive() {
+                this.scrollObj = new LocomotiveScroll({
+                    el: document.querySelector('[data-scroll-container]'),
+                    smooth: true,
+                    multiplier: 1, // Scroll hızı çarpanı
+                    lerp: 0.1 // Yumuşaklık değeri (Daha düşük = daha "ağır/lüks" his)
+                });
+
+                this.scrollObj.on('scroll', (args) => {
+                    this.scroll.target = args.scroll.y;
+                });
+            }
+
+            initThree() {
+                this.scene = new THREE.Scene();
+                
+                // FOV hesaplaması: HTML boyutlarını Three.js birimlerine eşlemek için
+                this.camera = new THREE.PerspectiveCamera(70, this.width / this.height, 0.1, 100);
+                this.camera.position.z = 600; // Kamerayı geriye çek
+                
+                // Görüş alanını (FOV) ekrana tam oturtmak için formül
+                this.camera.fov = 2 * Math.atan((this.height / 2) / 600) * (180 / Math.PI);
+
+                this.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+                this.renderer.setSize(this.width, this.height);
+                this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                this.container.appendChild(this.renderer.domElement);
+            }
+
+            addObjects() {
+                this.imageStore = this.images.map(img => {
+                    const bounds = img.getBoundingClientRect();
+
+                    // Texture yükle
+                    const texture = new THREE.TextureLoader().load(img.src);
+                    texture.needsUpdate = true;
+
+                    // Shader Material
+                    const material = new THREE.ShaderMaterial({
+                        uniforms: {
+                            uTime: { value: 0 },
+                            uTexture: { value: texture },
+                            uHoverState: { value: 0 },
+                            uMouse: { value: new THREE.Vector2(0.5, 0.5) }
+                        },
+                        vertexShader: vertexShader,
+                        fragmentShader: fragmentShader,
+                        // wireframe: true // Debug için açabilirsiniz
+                    });
+
+                    // Geometri (Plane)
+                    const geometry = new THREE.PlaneGeometry(bounds.width, bounds.height, 16, 16);
+                    const mesh = new THREE.Mesh(geometry, material);
+
+                    this.scene.add(mesh);
+
+                    // Mouse olayları
+                    img.addEventListener('mouseenter', () => {
+                        gsap.to(material.uniforms.uHoverState, {
+                            duration: 0.5,
+                            value: 1,
+                            ease: "power2.out"
+                        });
+                        cursor.classList.add('active');
+                    });
+
+                    img.addEventListener('mouseleave', () => {
+                        gsap.to(material.uniforms.uHoverState, {
+                            duration: 0.5,
+                            value: 0,
+                            ease: "power2.out"
+                        });
+                        cursor.classList.remove('active');
+                    });
+
+                    return {
+                        img: img,
+                        mesh: mesh,
+                        top: bounds.top, // Sayfa yüklendiğindeki orijinal top
+                        left: bounds.left,
+                        width: bounds.width,
+                        height: bounds.height
+                    };
+                });
+            }
+
+            render() {
+                this.time += 0.05;
+
+                // Scroll Momentum (Smooth)
+                // Mevcut scroll'u hedefe (Locomotive'den gelen) yaklaştır
+                this.scroll.current = this.lerp(this.scroll.current, this.scroll.target, 0.1);
+
+                // Tüm resimlerin pozisyonunu güncelle
+                this.imageStore.forEach(o => {
+                    // Mesh pozisyonunu HTML elementine göre ayarla
+                    // Eksi scroll.current: Sayfa aşağı indikçe mesh yukarı çıkmalı
+                    o.mesh.position.y = (this.height / 2) - o.top + this.scroll.current - (o.height / 2);
+                    o.mesh.position.x = o.left - (this.width / 2) + (o.width / 2);
+                    
+                    // Shader uniform güncelle
+                    o.mesh.material.uniforms.uTime.value += 0.05;
+                });
+
+                this.renderer.render(this.scene, this.camera);
+                requestAnimationFrame(this.render.bind(this));
+            }
+
+            lerp(start, end, t) {
+                return start * (1 - t) + end * t;
+            }
+
+            resize() {
+                this.width = window.innerWidth;
+                this.height = window.innerHeight;
+                this.renderer.setSize(this.width, this.height);
+                this.camera.aspect = this.width / this.height;
+                
+                // FOV'u yeniden hesapla
+                this.camera.fov = 2 * Math.atan((this.height / 2) / 600) * (180 / Math.PI);
+                this.camera.updateProjectionMatrix();
+
+                // Resim sınırlarını yeniden hesapla
+                this.imageStore.forEach(o => {
+                    const bounds = o.img.getBoundingClientRect();
+                    // Locomotive transform'u yüzünden bounding client rect kayabilir,
+                    // burada basitleştirilmiş bir resize mantığı kullanıyoruz.
+                    // Gerçek projede locomotive'in update methodunu çağırmak gerekebilir.
+                });
+            }
+        }
+
+        // Sayfa yüklendiğinde başlat (Resimlerin yüklenmesi için ufak gecikme)
+        window.addEventListener('load', () => {
+            new Sketch();
+        });
+
+    </script>
+</body>
+</html>
