@@ -1,436 +1,171 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liquid Parallax Portfolio</title>
-    
-    <!-- Locomotive Scroll CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.1.4/dist/locomotive-scroll.min.css">
-    
-    <style>
-        /* --- Temel Ayarlar --- */
-        @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Manrope:wght@300;500&display=swap');
+    <title>Eyüp Ensar Erkul — NyxLabs</title>
+    <meta name="description" content="Eyüp Ensar Erkul — NyxLabs çatısı altında yüksek performanslı ve yenilikçi yazılımlar geliştiren yazılım geliştirici ve beyaz şapkalı hacker.">
+    <meta name="author" content="Eyüp Ensar Erkul">
+    <meta name="theme-color" content="#09090b">
+    <meta name="color-scheme" content="dark">
 
-        body {
-            margin: 0;
-            background-color: #0b0b0b;
-            color: #ececec;
-            font-family: 'Manrope', sans-serif;
-            overflow: hidden; /* Locomotive Scroll için gerekli */
-        }
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Eyüp Ensar Erkul — NyxLabs">
+    <meta property="og:description" content="Yazılım Geliştirici &amp; Beyaz Şapkalı Hacker">
+    <meta property="og:image" content="https://github.com/eypensare.png">
+    <meta name="twitter:card" content="summary">
 
-        /* --- Custom Cursor (Neon Halka) --- */
-        .cursor {
-            width: 20px;
-            height: 20px;
-            border: 2px solid #00f2ff;
-            border-radius: 50%;
-            position: fixed;
-            pointer-events: none;
-            z-index: 9999;
-            transform: translate(-50%, -50%);
-            transition: width 0.3s, height 0.3s, background-color 0.3s;
-            mix-blend-mode: difference;
-        }
+    <!-- Favicon: varsayılan "N" monogramı; script.js GitHub avatarı yüklenince değiştirir -->
+    <link id="favicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32' fill='%23121215'/%3E%3Ccircle cx='32' cy='32' r='30.5' fill='none' stroke='%23ffffff' stroke-opacity='.25' stroke-width='3'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-family='Arial,sans-serif' font-size='34' font-weight='700' fill='%23e4e4e7'%3EN%3C/text%3E%3C/svg%3E">
 
-        .cursor.active {
-            width: 50px;
-            height: 50px;
-            background-color: rgba(0, 242, 255, 0.2);
-            border-color: transparent;
-        }
-
-        /* --- Canvas (WebGL) --- */
-        #webgl-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1; /* İçeriğin arkasında */
-            pointer-events: none;
-        }
-
-        /* --- Layout & Typography --- */
-        .c-scrollbar { z-index: 1000; } /* Scrollbar üstte kalsın */
-
-        h1, h2 {
-            font-family: 'Syncopate', sans-serif;
-            text-transform: uppercase;
-            margin: 0;
-        }
-
-        section {
-            padding: 10vh 5vw;
-            position: relative;
-        }
-
-        /* Hero Section */
-        .hero {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: flex-start;
-        }
-
-        .hero h1 {
-            font-size: 8vw;
-            line-height: 0.9;
-            opacity: 0; /* JS ile açılacak */
-            animation: fadeIn 1s forwards 0.5s;
-        }
-
-        .hero p {
-            font-size: 1.5rem;
-            max-width: 400px;
-            margin-top: 2rem;
-            color: #888;
-        }
-
-        @keyframes fadeIn { to { opacity: 1; } }
-
-        /* Gallery / Projects */
-        .gallery {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10vw;
-            margin-top: 10vh;
-            padding-bottom: 20vh;
-        }
-
-        .gallery-item {
-            position: relative;
-            width: 100%;
-            height: 60vh; /* Resim yüksekliği */
-            margin-bottom: 10vh;
-        }
-
-        .gallery-item:nth-child(even) {
-            margin-top: 20vh; /* Asimetrik görünüm */
-        }
-
-        /* Resim Yer Tutucuları (Görünmez ama yer kaplar) */
-        .gallery-image {
-            width: 100%;
-            height: 100%;
-            opacity: 0; /* Resmi gizle, Three.js çizecek */
-            visibility: hidden; 
-        }
-
-        .gallery-text {
-            position: absolute;
-            bottom: -40px;
-            left: 0;
-            font-size: 2rem;
-            font-weight: 700;
-        }
-
-        /* Footer */
-        .footer {
-            height: 50vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #111;
-        }
-
-        a { color: inherit; text-decoration: none; cursor: none; }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+    <noscript>
+        <style>
+            .reveal { opacity: 1 !important; transform: none !important; }
+        </style>
+    </noscript>
 </head>
 <body>
-
-    <!-- Özel İmleç -->
-    <div class="cursor"></div>
-
-    <!-- WebGL Canvas -->
-    <div id="webgl-container"></div>
-
-    <!-- Locomotive Scroll Wrapper -->
-    <div data-scroll-container id="main-container">
-        
-        <section class="hero" data-scroll-section>
-            <div>
-                <!-- data-scroll-speed: Parallax hızı. Negatif değer ters yöne, pozitif aynı yöne hızlı gider -->
-                <h1 data-scroll data-scroll-speed="1">Creative</h1>
-                <h1 data-scroll data-scroll-speed="3" style="color:#00f2ff">Developer</h1>
-                <h1 data-scroll data-scroll-speed="2">Portfolio</h1>
-            </div>
-            <p data-scroll data-scroll-speed="-1">
-                WebGL, Shaders ve Smooth Scroll ile güçlendirilmiş dijital deneyimler.
-            </p>
-        </section>
-
-        <section class="gallery" data-scroll-section>
-            <!-- Proje 1 -->
-            <div class="gallery-item">
-                <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop" class="gallery-image" alt="Abstract 1" data-hover-title="Neon Future">
-                <div class="gallery-text" data-scroll data-scroll-speed="1">NEON FUTURE</div>
-            </div>
-
-            <!-- Proje 2 -->
-            <div class="gallery-item">
-                <img src="https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80&w=1000&auto=format&fit=crop" class="gallery-image" alt="Abstract 2" data-hover-title="Liquid Data">
-                <div class="gallery-text" data-scroll data-scroll-speed="2">LIQUID DATA</div>
-            </div>
-
-            <!-- Proje 3 -->
-            <div class="gallery-item">
-                <img src="https://images.unsplash.com/photo-1634152962476-4b8a00e1915c?q=80&w=1000&auto=format&fit=crop" class="gallery-image" alt="Abstract 3" data-hover-title="Cyber Space">
-                <div class="gallery-text" data-scroll data-scroll-speed="1">CYBER SPACE</div>
-            </div>
-            
-             <!-- Proje 4 -->
-             <div class="gallery-item">
-                <img src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=1000&auto=format&fit=crop" class="gallery-image" alt="Abstract 4" data-hover-title="Deep Dive">
-                <div class="gallery-text" data-scroll data-scroll-speed="1.5">DEEP DIVE</div>
-            </div>
-        </section>
-
-        <section class="footer" data-scroll-section>
-            <h2 data-scroll data-scroll-speed="1">Let's work together.</h2>
-        </section>
+    <div class="ambient" aria-hidden="true">
+        <span class="ambient__orb ambient__orb--one"></span>
+        <span class="ambient__orb ambient__orb--two"></span>
     </div>
 
-    <!-- Kütüphaneler -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.1.4/dist/locomotive-scroll.min.js"></script>
+    <a class="skip-link" href="#main" data-i18n="nav.skip">Ana içeriğe geç</a>
 
-    <script>
-        // --- 1. Custom Cursor Mantığı ---
-        const cursor = document.querySelector('.cursor');
-        
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-        });
+    <header class="nav-wrap">
+        <nav class="nav glass" aria-label="Main">
+            <a class="brand" href="#top" aria-label="NyxLabs">
+                <span class="brand__avatar" id="brandAvatar">
+                    <span class="brand__fallback" aria-hidden="true">N</span>
+                    <img id="brandImg" src="https://github.com/eypensare.png?size=96" alt="" width="32" height="32" decoding="async">
+                </span>
+                <span class="brand__name">NyxLabs</span>
+            </a>
 
-        // Etkileşimli elementlerin üzerine gelince büyütme
-        const hoverElements = document.querySelectorAll('a, h1, .gallery-item');
-        hoverElements.forEach(el => {
-            el.addEventListener('mouseenter', () => cursor.classList.add('active'));
-            el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
-        });
+            <ul class="nav__links">
+                <li><a href="#about" data-nav="about" data-i18n="nav.about">Hakkımda</a></li>
+                <li><a href="#projects" data-nav="projects" data-i18n="nav.projects">Projeler</a></li>
+                <li><a href="#contact" data-nav="contact" data-i18n="nav.contact">İletişim</a></li>
+            </ul>
 
+            <div class="lang" role="group" aria-label="Language / Dil">
+                <span class="lang__thumb" aria-hidden="true"></span>
+                <button type="button" class="lang__btn" data-lang="tr" aria-pressed="true">TR</button>
+                <button type="button" class="lang__btn" data-lang="en" aria-pressed="false">EN</button>
+            </div>
+        </nav>
+    </header>
 
-        // --- 2. WebGL & Shader Kurulumu ---
-        
-        // Shader Kodları (Vertex & Fragment)
-        // Vertex Shader: Piksellerin pozisyonunu ve UV koordinatlarını ayarlar
-        const vertexShader = `
-            uniform float uTime;
-            uniform vec2 uHover; // Hover pozisyonu
-            uniform float uHoverState; // Hover gücü (0 -> 1)
-            
-            varying vec2 vUv;
-            varying float vNoise;
+    <main id="main">
+        <!-- Hero -->
+        <section class="hero" id="top">
+            <div class="container hero__inner">
+                <p class="badge reveal" data-i18n="hero.badge">NyxLabs • Yazılım &amp; Güvenlik</p>
+                <h1 class="hero__name reveal" style="--d: 80ms">Eyüp Ensar Erkul</h1>
+                <p class="hero__title reveal" style="--d: 160ms" data-i18n="hero.title">Yazılım Geliştirici &amp; Beyaz Şapkalı Hacker</p>
+                <p class="hero__sub reveal" style="--d: 240ms" data-i18n="hero.sub">NyxLabs çatısı altında yüksek performanslı ve yenilikçi yazılımlar geliştiriyorum.</p>
+                <div class="hero__actions reveal" style="--d: 320ms">
+                    <a class="btn btn--primary" href="#projects" data-i18n="hero.cta1">Projeleri İncele</a>
+                    <a class="btn btn--glass" href="https://github.com/eypensare" target="_blank" rel="noopener noreferrer">
+                        <span data-i18n="hero.cta2">GitHub Profili</span>
+                        <svg class="icon icon--sm" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 11.5l7-7M5.5 4.5h6v6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </a>
+                </div>
+            </div>
+        </section>
 
-            void main() {
-                vUv = uv;
-                
-                // Basit bir dalgalanma efekti için noise benzeri işlem
-                float dist = distance(uv, uHover); // Mouse'un texture üzerindeki konumu
-                
-                // Hover durumunda vertex'leri "Z" ekseninde veya dalga olarak oynat
-                // Burada 2D bozulma (distortion) yapacağız
-                
-                vec3 newPos = position;
-                
-                // Sine dalgası efekti
-                float wave = sin(newPos.x * 5.0 + uTime * 2.0) * 0.1 * uHoverState;
-                newPos.z += wave;
+        <!-- About -->
+        <section class="section" id="about" aria-labelledby="about-title">
+            <div class="container">
+                <header class="section__head reveal">
+                    <p class="eyebrow" data-i18n="about.eyebrow">Hakkımda</p>
+                    <h2 id="about-title" data-i18n="about.title">Performans ve sadelik üzerine.</h2>
+                </header>
 
-                gl_Position = projectionMatrix * modelViewMatrix * vec4(newPos, 1.0);
-            }
-        `;
+                <div class="bento">
+                    <article class="card bento__main reveal">
+                        <p class="card__label" data-i18n="about.mainLabel">Biyografi</p>
+                        <p class="bento__bio" data-i18n="about.bio">YTÜ Maçka MTAL Bilişim Teknolojileri hazırlık sınıfı öğrencisiyim. Aynı zamanda Maçka VEX Robotics takımının yazılım ekibinde yer alıyorum. Arch Linux (CachyOS) kullanıcısıyım ve performans/optimizasyon benim için bir tutku.</p>
+                        <ul class="chips" aria-label="Tags">
+                            <li>YTÜ Maçka MTAL</li>
+                            <li>VEX Robotics</li>
+                            <li>CachyOS</li>
+                        </ul>
+                    </article>
 
-        // Fragment Shader: Sıvı (Liquid) doku manipülasyonu
-        const fragmentShader = `
-            uniform sampler2D uTexture;
-            uniform float uTime;
-            uniform float uHoverState;
-            uniform vec2 uMouse;
+                    <article class="card bento__side bento__side--one reveal" style="--d: 100ms">
+                        <span class="card__icon" aria-hidden="true">
+                            <svg class="icon" viewBox="0 0 24 24"><path d="M4 17l6-6-6-6M12 19h8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </span>
+                        <p class="card__label" data-i18n="about.focusLabel">Odak Alanı</p>
+                        <h3 data-i18n="about.focusTitle">Sistem &amp; Performans</h3>
+                        <ul class="list">
+                            <li data-i18n="about.focus1">Arch Linux / CachyOS</li>
+                            <li data-i18n="about.focus2">Düşük Seviye Optimizasyon &amp; Web Mimarisi</li>
+                        </ul>
+                    </article>
 
-            varying vec2 vUv;
+                    <article class="card bento__side bento__side--two reveal" style="--d: 180ms">
+                        <span class="card__icon" aria-hidden="true">
+                            <svg class="icon" viewBox="0 0 24 24"><rect x="5" y="8" width="14" height="10" rx="3" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 8V4.5M9 13h.01M15 13h.01M3 12v2M21 12v2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                        </span>
+                        <p class="card__label" data-i18n="about.communityLabel">Topluluk &amp; Robotik</p>
+                        <h3 data-i18n="about.communityTitle">Maçka VEX Robotics</h3>
+                        <ul class="list">
+                            <li data-i18n="about.community1">Maçka VEX Robotics Yazılım Ekibi</li>
+                            <li data-i18n="about.community2">Açık Kaynak Geliştirme</li>
+                        </ul>
+                    </article>
+                </div>
+            </div>
+        </section>
 
-            void main() {
-                vec2 uv = vUv;
+        <!-- Projects -->
+        <section class="section" id="projects" aria-labelledby="projects-title">
+            <div class="container">
+                <header class="section__head reveal">
+                    <p class="eyebrow" data-i18n="projects.eyebrow">Projelerim</p>
+                    <h2 id="projects-title" data-i18n="projects.title">Seçili çalışmalar.</h2>
+                    <p class="section__lead" data-i18n="projects.lead">GitHub üzerinden canlı olarak listelenen açık kaynak projelerim.</p>
+                </header>
 
-                // Dalga benzeri deformasyon
-                float waveStrength = 0.05 * uHoverState;
-                
-                // X ve Y koordinatlarını sinüs dalgalarıyla büküyoruz
-                uv.x += sin(uv.y * 10.0 + uTime) * waveStrength;
-                uv.y += cos(uv.x * 10.0 + uTime) * waveStrength;
+                <div class="projects" id="projectGrid" aria-live="polite" aria-busy="true">
+                    <!-- Skeleton kartlar script.js tarafından üretilir; repolar yüklendiğinde yerini alır -->
+                </div>
+            </div>
+        </section>
 
-                // Mouse etkileşimi ile RGB kayması (Chromatic Aberration)
-                float r = texture2D(uTexture, uv + vec2(0.005 * uHoverState, 0.0)).r;
-                float g = texture2D(uTexture, uv).g;
-                float b = texture2D(uTexture, uv - vec2(0.005 * uHoverState, 0.0)).b;
+        <!-- Contact -->
+        <section class="section section--contact" id="contact" aria-labelledby="contact-title">
+            <div class="container">
+                <div class="contact card reveal">
+                    <p class="eyebrow" data-i18n="contact.eyebrow">İletişim</p>
+                    <h2 id="contact-title" data-i18n="contact.title">Birlikte bir şey inşa edelim.</h2>
+                    <p class="contact__lead" data-i18n="contact.lead">Proje fikirleri, iş birlikleri veya sadece merhaba demek için bana sosyal hesaplarımdan ulaşabilirsin.</p>
+                    <div class="contact__actions">
+                        <a class="btn btn--glass" href="https://github.com/eypensare" target="_blank" rel="noopener noreferrer">
+                            <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                            <span>GitHub</span>
+                        </a>
+                        <a class="btn btn--glass" href="https://instagram.com/eypensare" target="_blank" rel="noopener noreferrer">
+                            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor"/></svg>
+                            <span>Instagram</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
 
-                gl_FragColor = vec4(r, g, b, 1.0);
-            }
-        `;
-
-
-        // Ana Script Sınıfı
-        class Sketch {
-            constructor() {
-                this.container = document.getElementById('webgl-container');
-                this.images = [...document.querySelectorAll('.gallery-image')];
-                
-                this.width = window.innerWidth;
-                this.height = window.innerHeight;
-
-                this.scroll = { current: 0, target: 0, last: 0 };
-                
-                this.initLocomotive();
-                this.initThree();
-                this.addObjects();
-                this.render();
-                
-                window.addEventListener('resize', this.resize.bind(this));
-            }
-
-            initLocomotive() {
-                this.scrollObj = new LocomotiveScroll({
-                    el: document.querySelector('[data-scroll-container]'),
-                    smooth: true,
-                    multiplier: 1, // Scroll hızı çarpanı
-                    lerp: 0.1 // Yumuşaklık değeri (Daha düşük = daha "ağır/lüks" his)
-                });
-
-                this.scrollObj.on('scroll', (args) => {
-                    this.scroll.target = args.scroll.y;
-                });
-            }
-
-            initThree() {
-                this.scene = new THREE.Scene();
-                
-                // FOV hesaplaması: HTML boyutlarını Three.js birimlerine eşlemek için
-                this.camera = new THREE.PerspectiveCamera(70, this.width / this.height, 0.1, 100);
-                this.camera.position.z = 600; // Kamerayı geriye çek
-                
-                // Görüş alanını (FOV) ekrana tam oturtmak için formül
-                this.camera.fov = 2 * Math.atan((this.height / 2) / 600) * (180 / Math.PI);
-
-                this.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-                this.renderer.setSize(this.width, this.height);
-                this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-                this.container.appendChild(this.renderer.domElement);
-            }
-
-            addObjects() {
-                this.imageStore = this.images.map(img => {
-                    const bounds = img.getBoundingClientRect();
-
-                    // Texture yükle
-                    const texture = new THREE.TextureLoader().load(img.src);
-                    texture.needsUpdate = true;
-
-                    // Shader Material
-                    const material = new THREE.ShaderMaterial({
-                        uniforms: {
-                            uTime: { value: 0 },
-                            uTexture: { value: texture },
-                            uHoverState: { value: 0 },
-                            uMouse: { value: new THREE.Vector2(0.5, 0.5) }
-                        },
-                        vertexShader: vertexShader,
-                        fragmentShader: fragmentShader,
-                        // wireframe: true // Debug için açabilirsiniz
-                    });
-
-                    // Geometri (Plane)
-                    const geometry = new THREE.PlaneGeometry(bounds.width, bounds.height, 16, 16);
-                    const mesh = new THREE.Mesh(geometry, material);
-
-                    this.scene.add(mesh);
-
-                    // Mouse olayları
-                    img.addEventListener('mouseenter', () => {
-                        gsap.to(material.uniforms.uHoverState, {
-                            duration: 0.5,
-                            value: 1,
-                            ease: "power2.out"
-                        });
-                        cursor.classList.add('active');
-                    });
-
-                    img.addEventListener('mouseleave', () => {
-                        gsap.to(material.uniforms.uHoverState, {
-                            duration: 0.5,
-                            value: 0,
-                            ease: "power2.out"
-                        });
-                        cursor.classList.remove('active');
-                    });
-
-                    return {
-                        img: img,
-                        mesh: mesh,
-                        top: bounds.top, // Sayfa yüklendiğindeki orijinal top
-                        left: bounds.left,
-                        width: bounds.width,
-                        height: bounds.height
-                    };
-                });
-            }
-
-            render() {
-                this.time += 0.05;
-
-                // Scroll Momentum (Smooth)
-                // Mevcut scroll'u hedefe (Locomotive'den gelen) yaklaştır
-                this.scroll.current = this.lerp(this.scroll.current, this.scroll.target, 0.1);
-
-                // Tüm resimlerin pozisyonunu güncelle
-                this.imageStore.forEach(o => {
-                    // Mesh pozisyonunu HTML elementine göre ayarla
-                    // Eksi scroll.current: Sayfa aşağı indikçe mesh yukarı çıkmalı
-                    o.mesh.position.y = (this.height / 2) - o.top + this.scroll.current - (o.height / 2);
-                    o.mesh.position.x = o.left - (this.width / 2) + (o.width / 2);
-                    
-                    // Shader uniform güncelle
-                    o.mesh.material.uniforms.uTime.value += 0.05;
-                });
-
-                this.renderer.render(this.scene, this.camera);
-                requestAnimationFrame(this.render.bind(this));
-            }
-
-            lerp(start, end, t) {
-                return start * (1 - t) + end * t;
-            }
-
-            resize() {
-                this.width = window.innerWidth;
-                this.height = window.innerHeight;
-                this.renderer.setSize(this.width, this.height);
-                this.camera.aspect = this.width / this.height;
-                
-                // FOV'u yeniden hesapla
-                this.camera.fov = 2 * Math.atan((this.height / 2) / 600) * (180 / Math.PI);
-                this.camera.updateProjectionMatrix();
-
-                // Resim sınırlarını yeniden hesapla
-                this.imageStore.forEach(o => {
-                    const bounds = o.img.getBoundingClientRect();
-                    // Locomotive transform'u yüzünden bounding client rect kayabilir,
-                    // burada basitleştirilmiş bir resize mantığı kullanıyoruz.
-                    // Gerçek projede locomotive'in update methodunu çağırmak gerekebilir.
-                });
-            }
-        }
-
-        // Sayfa yüklendiğinde başlat (Resimlerin yüklenmesi için ufak gecikme)
-        window.addEventListener('load', () => {
-            new Sketch();
-        });
-
-    </script>
+    <footer class="footer">
+        <div class="container">
+            <p>© 2026 Eyüp Ensar Erkul • NyxLabs</p>
+        </div>
+    </footer>
 </body>
 </html>
